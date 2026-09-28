@@ -19,5 +19,84 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+(() => {
+  const images = [
+    "/assets/hero-1.png",
+    "/assets/hero-2.png",
+    "/assets/hero-3.png",
+    "/assets/hero-4.png",
+    "/assets/hero-5.png"
+  ];
+
+  let attempts = 0;
+
+  function setupHeroSlider() {
+    const heading = [...document.querySelectorAll("h1, h2")]
+      .find((element) => element.textContent.includes("Baked with Love"));
+
+    if (!heading) {
+      if (attempts++ < 40) setTimeout(setupHeroSlider, 250);
+      return;
+    }
+
+    const hero = heading.closest("section") || heading.parentElement.parentElement;
+
+    if (!hero || document.getElementById("golok-hero-slider")) return;
+
+    hero.style.position = "relative";
+    hero.style.overflow = "hidden";
+    hero.style.backgroundImage = "none";
+
+    const slider = document.createElement("div");
+    slider.id = "golok-hero-slider";
+    slider.setAttribute("aria-hidden", "true");
+
+    Object.assign(slider.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: "0",
+      pointerEvents: "none"
+    });
+
+    const slides = images.map((src, index) => {
+      const slide = document.createElement("div");
+
+      Object.assign(slide.style, {
+        position: "absolute",
+        inset: "0",
+        backgroundImage: `url("${src}")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        opacity: index === 0 ? "1" : "0",
+        transition: "opacity 900ms ease-in-out"
+      });
+
+      slider.appendChild(slide);
+      return slide;
+    });
+
+    hero.prepend(slider);
+
+    let layer = heading;
+    while (layer && layer !== hero) {
+      layer.style.position = "relative";
+      layer.style.zIndex = "2";
+      layer = layer.parentElement;
+    }
+
+    let active = 0;
+
+    setInterval(() => {
+      slides[active].style.opacity = "0";
+      active = (active + 1) % slides.length;
+      slides[active].style.opacity = "1";
+    }, 3000);
+  }
+
+  window.addEventListener("load", setupHeroSlider);
+  setTimeout(setupHeroSlider, 500);
+})();
+</script>
   </body>
 </html>
